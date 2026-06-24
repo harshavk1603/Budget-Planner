@@ -1,9 +1,45 @@
-/* Dashboard.css – Premium finance dashboard */
+/* ═══════════════════════════════════════════════════════
+   Dashboard.css  –  Premium Fintech Dashboard Layout
+   ═══════════════════════════════════════════════════════ */
 
-/* ─ Overview section ─ */
-.dashboard-overview {
-  margin-bottom: var(--space-6);
+/* ── Decorative Dashboard Background Orbs ── */
+.dashboard-page-container {
   position: relative;
+}
+
+.dashboard-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  will-change: transform;
+}
+
+.dashboard-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--accent-purple);
+  top: -100px;
+  right: -50px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.dashboard-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: var(--accent-blue);
+  bottom: 100px;
+  left: -50px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+/* ── Dashboard Overview Header ── */
+.dashboard-overview {
+  margin-bottom: var(--space-8);
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-greeting {
@@ -11,7 +47,7 @@
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-1);
   letter-spacing: -0.02em;
   line-height: 1.3;
 }
@@ -19,76 +55,108 @@
 .dashboard-date {
   font-size: 0.875rem;
   color: var(--text-muted);
-  letter-spacing: 0.01em;
+  font-weight: 500;
 }
 
-/* ─ Dashboard Grid (2-column layout for income + savings) ─ */
+/* ── Stat Cards Grid (Staggers defined in StatCard.css) ── */
+.stat-card-grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Alerts Section ── */
+.alerts-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-8);
+}
+
+.alerts-section .alert {
+  border-left: 4px solid var(--accent-rose);
+  border-radius: var(--radius-md);
+  background: rgba(244, 63, 94, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-top: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.alerts-section .alert:hover {
+  transform: translateX(3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Main Grid Layout ── */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-6);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 1024px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* ─ Section Card ─ */
-.dashboard-section {
+/* ── Panel Cards (Income & Savings Sections) ── */
+.income-section,
+.savings-section,
+.recent-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: box-shadow var(--transition), border-color var(--transition);
-}
-
-.dashboard-section:hover {
   box-shadow: var(--shadow-sm);
-  border-color: var(--border-strong);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  position: relative;
+  z-index: 1;
 }
 
-.dashboard-section-header {
+.income-section::before,
+.savings-section::before,
+.recent-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-card);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.income-section:hover,
+.savings-section:hover,
+.recent-section:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.income-header,
+.savings-header,
+.recent-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-  gap: var(--space-3);
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.01);
 }
 
-.dashboard-section-body {
-  padding: var(--space-5) var(--space-6);
-}
-
-/* ─ Income Section ─ */
-.income-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: box-shadow var(--transition), border-color var(--transition);
-}
-
-.income-section:hover {
-  box-shadow: var(--shadow-sm);
-  border-color: var(--border-strong);
-}
-
-.income-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
+/* ── Income Sources Item List ── */
 .income-list {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 .income-item {
@@ -96,8 +164,8 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4) var(--space-6);
-  transition: background var(--transition-fast);
   border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
 }
 
 .income-item:last-child {
@@ -109,6 +177,31 @@
 }
 
 .income-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Income indicator icon backdrop */
+.income-item-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: transform var(--transition);
+}
+
+.income-item:hover .income-item-icon-wrapper {
+  transform: scale(1.08) rotate(5deg);
+}
+
+.income-item-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -127,70 +220,27 @@
 
 .income-item-amount {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 750;
   font-size: 1rem;
   color: var(--accent-green);
   letter-spacing: -0.01em;
 }
 
-/* ─ Recent Transactions ─ */
-.recent-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: var(--space-6);
-  transition: box-shadow var(--transition), border-color var(--transition);
-}
-
-.recent-section:hover {
-  box-shadow: var(--shadow-sm);
-  border-color: var(--border-strong);
-}
-
-.recent-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
-/* ─ Savings Goals ─ */
-.savings-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: box-shadow var(--transition), border-color var(--transition);
-}
-
-.savings-section:hover {
-  box-shadow: var(--shadow-sm);
-  border-color: var(--border-strong);
-}
-
-.savings-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
+/* ── Savings Goals Cards ── */
 .savings-list {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 .savings-item {
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--border);
-  transition: background var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: background var(--transition);
 }
 
 .savings-item:last-child {
@@ -198,34 +248,38 @@
 }
 
 .savings-item:hover {
-  background: rgba(139, 92, 246, 0.02);
+  background: rgba(139, 92, 246, 0.015);
 }
 
 .savings-item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-3);
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-.savings-item-name-group {
+.savings-item-left {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-.savings-item-emoji {
-  font-size: 1.5rem;
-  width: 40px;
-  height: 40px;
+.savings-item-emoji-wrapper {
+  width: 42px;
+  height: 42px;
+  font-size: 1.35rem;
   background: var(--bg-hover);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: transform var(--transition-bounce), background var(--transition);
+}
+
+.savings-item:hover .savings-item-emoji-wrapper {
+  transform: scale(1.06) translateY(-2px);
+  background: rgba(139, 92, 246, 0.08);
 }
 
 .savings-item-name {
@@ -234,20 +288,47 @@
   font-size: 0.9375rem;
 }
 
+.savings-item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .savings-item-amounts {
   font-size: 0.875rem;
   color: var(--text-secondary);
+  text-align: right;
 }
 
 .savings-item-amounts strong {
   color: var(--accent-purple);
   font-family: var(--font-display);
+  font-weight: 700;
+}
+
+/* Savings deposit inline input group */
+.savings-deposit {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.savings-deposit .form-input {
+  flex: 1;
+  padding: 8px var(--space-3);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
+}
+
+.savings-deposit .btn {
+  padding: 8px var(--space-4);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
 }
 
 .savings-item-pct {
   font-size: 0.8125rem;
   color: var(--text-muted);
-  margin-top: var(--space-2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -261,77 +342,122 @@
   gap: 4px;
 }
 
-/* ─ Budget Alerts ─ */
-.alerts-section {
-  margin-bottom: var(--space-6);
-}
-
-.alerts-section-title {
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
-  font-weight: 700;
-  margin-bottom: var(--space-4);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.alerts-section .alert + .alert {
-  margin-top: var(--space-3);
-}
-
-/* ─ Bottom grid ─ */
-.dashboard-bottom {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-5);
+/* ── Recent Transactions Table & Mobile Layout ── */
+.recent-section {
   margin-bottom: var(--space-8);
 }
 
-@media (max-width: 900px) {
-  .dashboard-bottom { grid-template-columns: 1fr; }
+/* Alternate rows styling for desktop table */
+.recent-section table.table tbody tr:nth-child(even) {
+  background: rgba(139, 92, 246, 0.008);
 }
 
-/* Add Income Modal */
-.income-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+.recent-section table.table tbody tr:hover {
+  background: var(--bg-hover);
 }
 
-/* Savings deposit form */
-.savings-deposit {
-  display: flex;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
+/* ── Mobile Layout for Transactions (Pure CSS override) ── */
+@media (max-width: 640px) {
+  /* Turn the table markup into a stacked card deck */
+  .recent-section .table-wrapper {
+    border: none;
+    border-radius: 0;
+  }
+  
+  .recent-section table.table {
+    display: block;
+    width: 100%;
+  }
+  
+  .recent-section table.table thead {
+    display: none; /* Hide header columns */
+  }
+  
+  .recent-section table.table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  
+  .recent-section table.table tbody tr {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--space-4);
+    background: var(--bg-card-elevated) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    gap: var(--space-2);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  
+  .recent-section table.table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border-strong) !important;
+  }
+  
+  .recent-section table.table tbody tr td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 !important;
+    border: none !important;
+    width: 100% !important;
+  }
+  
+  /* Layout the TD contents */
+  /* Description TD */
+  .recent-section table.table tbody tr td:nth-child(1) {
+    font-size: 0.9375rem;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    order: 1;
+  }
+  
+  /* Category TD */
+  .recent-section table.table tbody tr td:nth-child(2) {
+    order: 3;
+    justify-content: flex-start;
+  }
+  
+  /* Date TD */
+  .recent-section table.table tbody tr td:nth-child(3) {
+    font-size: 0.8125rem;
+    color: var(--text-muted) !important;
+    order: 4;
+    justify-content: flex-end;
+    margin-top: -18px; /* pull up inline with badge */
+  }
+  
+  /* Amount TD */
+  .recent-section table.table tbody tr td:nth-child(4) {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: auto !important;
+    font-size: 1rem;
+    font-weight: 700;
+    order: 2;
+  }
 }
 
-.savings-deposit input {
-  flex: 1;
+/* ── Light Theme Adaptations ── */
+[data-theme="light"] .income-section,
+[data-theme="light"] .savings-section,
+[data-theme="light"] .recent-section {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(139, 92, 246, 0.02);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .dashboard-greeting {
-    font-size: 1.375rem;
-  }
+[data-theme="light"] .savings-item:hover {
+  background: rgba(139, 92, 246, 0.01);
+}
 
-  .income-item,
-  .savings-item {
-    padding: var(--space-4);
-  }
+[data-theme="light"] .dashboard-orb-1 {
+  opacity: 0.06;
+}
 
-  .income-header,
-  .savings-header,
-  .recent-header {
-    padding: var(--space-4);
-  }
-
-  .dashboard-section-header {
-    padding: var(--space-4);
-  }
-
-  .dashboard-section-body {
-    padding: var(--space-4);
-  }
+[data-theme="light"] .dashboard-orb-2 {
+  opacity: 0.05;
 }

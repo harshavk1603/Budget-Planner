@@ -11,9 +11,32 @@ export const budgetService = {
       .eq('month', currentMonth);
 
     if (error) throw error;
-    const limits = {};
-    (data || []).forEach((b) => { limits[b.category] = Number(b.limit_amount); });
-    return limits;
+    return data || [];
+  },
+
+  async upsert(userId, { category, limit_amount, month }) {
+    const { data, error } = await supabase
+      .from('budgets')
+      .upsert(
+        { user_id: userId, category, limit_amount, month },
+        { onConflict: 'user_id,category,month' }
+      )
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteByCategory(userId, category, month) {
+    const { error } = await supabase
+      .from('budgets')
+      .delete()
+      .eq('user_id', userId)
+      .eq('category', category)
+      .eq('month', month);
+
+    if (error) throw error;
   },
 
   async setAll(userId, limits) {

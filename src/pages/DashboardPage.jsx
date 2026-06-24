@@ -201,7 +201,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="dashboard-page-container animate-fade-in">
+      {/* Decorative background orbs */}
+      <div className="dashboard-orb dashboard-orb-1" aria-hidden="true" />
+      <div className="dashboard-orb dashboard-orb-2" aria-hidden="true" />
+
       <div className="dashboard-overview">
         <h1 className="dashboard-greeting">
           {greeting}, {displayName}! 👋
@@ -218,10 +222,10 @@ export default function DashboardPage() {
 
       {alerts.length > 0 && (
         <div className="alerts-section">
-          <h2 className="recent-title" style={{ marginBottom: "var(--space-3)" }}>⚠️ Budget Alerts</h2>
+          <h2 className="alerts-section-title">⚠️ Budget Alerts</h2>
           {alerts.map((a) => (
-            <div key={a.id} className="alert alert-danger">
-              <span style={{ fontSize: "1.25rem" }}>{a.icon}</span>
+            <div key={a.id} className="alert alert-danger" role="alert">
+              <span style={{ fontSize: "1.25rem" }} aria-hidden="true">{a.icon}</span>
               <div>
                 <strong>{a.label}</strong>: Spent {fmt(a.spent)} — limit is {fmt(a.limit)}.{" "}
                 You're over by <strong>{fmt(a.spent - a.limit)}</strong>.
@@ -232,116 +236,117 @@ export default function DashboardPage() {
       )}
 
       <div className="dashboard-grid">
-      <section className="income-section" aria-labelledby="income-section-title">
-        <div className="income-header">
-          <h2 className="recent-title" id="income-section-title">💵 Income Sources</h2>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowIncomeModal(true)} id="add-income-btn">
-            + Add Income
-          </button>
-        </div>
-
-        {transactions.filter((t) => t.type === "income").length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">💵</div>
-            <div className="empty-state-title">No income added yet</div>
-            <p>Click "Add Income" to record your earnings.</p>
+        <section className="income-section" aria-labelledby="income-section-title">
+          <div className="income-header">
+            <h2 className="recent-title" id="income-section-title">💵 Income Sources</h2>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowIncomeModal(true)} id="add-income-btn">
+              + Add Income
+            </button>
           </div>
-        ) : (
-          <div className="income-list">
-            {transactions.filter((t) => t.type === "income").map((item) => (
-              <div key={item.id} className="income-item" role="listitem">
-                <div className="income-item-left">
-                  <span className="income-item-source">{item.description}</span>
-                  <span className="income-item-date">
-                    {new Date(item.date).toLocaleDateString("en-IN")}
-                    {item.note && ` · ${item.note}`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
+
+          {transactions.filter((t) => t.type === "income").length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon" aria-hidden="true">💵</div>
+              <div className="empty-state-title">No income added yet</div>
+              <p>Click "Add Income" to record your earnings.</p>
+            </div>
+          ) : (
+            <div className="income-list">
+              {transactions.filter((t) => t.type === "income").map((item) => (
+                <div key={item.id} className="income-item" role="listitem">
+                  <div className="income-item-left">
+                    <div className="income-item-icon-wrapper" aria-hidden="true">💵</div>
+                    <div className="income-item-info">
+                      <span className="income-item-source">{item.description}</span>
+                      <span className="income-item-date">
+                        {new Date(item.date).toLocaleDateString("en-IN")}
+                        {item.note && ` · ${item.note}`}
+                      </span>
+                    </div>
+                  </div>
                   <span className="income-item-amount">+{fmt(item.amount)}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="savings-section" aria-labelledby="savings-section-title">
+          <div className="savings-header">
+            <h2 className="recent-title" id="savings-section-title">🎯 Savings Goals</h2>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowSavingsModal(true)} id="add-savings-btn">
+              + New Goal
+            </button>
           </div>
-        )}
-      </section>
 
-      <section className="savings-section" aria-labelledby="savings-section-title">
-        <div className="savings-header">
-          <h2 className="recent-title" id="savings-section-title">🎯 Savings Goals</h2>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowSavingsModal(true)} id="add-savings-btn">
-            + New Goal
-          </button>
-        </div>
-
-        {savingsGoals.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">🎯</div>
-            <div className="empty-state-title">No savings goals yet</div>
-            <p>Set a goal to track your progress towards something important.</p>
-          </div>
-        ) : (
-          <div className="savings-list">
-            {savingsGoals.map((goal) => {
-              const pct = Math.min((Number(goal.saved) / Number(goal.target)) * 100, 100);
-              return (
-                <div key={goal.id} className="savings-item">
-                  <div className="savings-item-header">
-                    <div>
-                      <span style={{ marginRight: 8 }}>{goal.emoji}</span>
-                      <span className="savings-item-name">{goal.name}</span>
+          {savingsGoals.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon" aria-hidden="true">🎯</div>
+              <div className="empty-state-title">No savings goals yet</div>
+              <p>Set a goal to track your progress towards something important.</p>
+            </div>
+          ) : (
+            <div className="savings-list">
+              {savingsGoals.map((goal) => {
+                const pct = Math.min((Number(goal.saved) / Number(goal.target)) * 100, 100);
+                return (
+                  <div key={goal.id} className="savings-item">
+                    <div className="savings-item-header">
+                      <div className="savings-item-left">
+                        <div className="savings-item-emoji-wrapper" aria-hidden="true">{goal.emoji}</div>
+                        <span className="savings-item-name">{goal.name}</span>
+                      </div>
+                      <div className="savings-item-right">
+                        <span className="savings-item-amounts">
+                          <strong>{fmt(goal.saved)}</strong> / {fmt(goal.target)}
+                        </span>
+                        <button className="btn btn-danger btn-sm" onClick={() => deleteSavingsGoal(goal.id)} aria-label={`Delete ${goal.name}`} style={{ padding: "4px 8px" }}>
+                          🗑
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="savings-item-amounts">
-                        <strong>{fmt(goal.saved)}</strong> / {fmt(goal.target)}
-                      </span>
-                      <button className="btn btn-danger btn-sm" onClick={() => deleteSavingsGoal(goal.id)} aria-label={`Delete ${goal.name}`}>
-                        🗑
-                      </button>
+
+                    <div className="progress-bar" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
+                      <div className="progress-fill" style={{ width: `${pct}%`, background: pct >= 100 ? "#22c55e" : "var(--gradient-hero)" }} />
                     </div>
-                  </div>
 
-                  <div className="progress-bar" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
-                    <div className="progress-fill" style={{ width: `${pct}%`, background: pct >= 100 ? "#22c55e" : "var(--gradient-hero)" }} />
-                  </div>
-
-                  <div className="savings-item-pct">
-                    <span>{Math.round(pct)}% complete</span>
-                    {pct >= 100 && <span style={{ color: "var(--accent-green)" }}>🎉 Goal reached!</span>}
-                  </div>
-
-                  {pct < 100 && (
-                    <div className="savings-deposit">
-                      <input
-                        type="number" min="0" step="0.01"
-                        className="form-input"
-                        placeholder={`Add ${currency.symbol}...`}
-                        value={depositAmounts[goal.id] || ""}
-                        onChange={(e) => setDepositAmounts((prev) => ({ ...prev, [goal.id]: e.target.value }))}
-                        aria-label={`Deposit amount for ${goal.name}`}
-                      />
-                      <button className="btn btn-primary btn-sm" onClick={() => handleDeposit(goal.id)}>
-                        Deposit
-                      </button>
+                    <div className="savings-item-pct">
+                      <span>{Math.round(pct)}% complete</span>
+                      {pct >= 100 && <span className="savings-goal-reached">🎉 Goal reached!</span>}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+
+                    {pct < 100 && (
+                      <div className="savings-deposit">
+                        <input
+                          type="number" min="0" step="0.01"
+                          className="form-input"
+                          placeholder={`Add ${currency.symbol}...`}
+                          value={depositAmounts[goal.id] || ""}
+                          onChange={(e) => setDepositAmounts((prev) => ({ ...prev, [goal.id]: e.target.value }))}
+                          aria-label={`Deposit amount for ${goal.name}`}
+                        />
+                        <button className="btn btn-primary btn-sm" onClick={() => handleDeposit(goal.id)}>
+                          Deposit
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </div>
 
       <section className="recent-section" aria-labelledby="recent-tx-title">
         <div className="recent-header">
           <h2 className="recent-title" id="recent-tx-title">🕐 Recent Transactions</h2>
-          <Link to="/expenses" className="btn btn-secondary btn-sm">View All →</Link>
+          <Link to="/expenses" className="btn btn-secondary btn-sm" style={{ textDecoration: "none" }}>View All →</Link>
         </div>
 
         {recentTx.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">📋</div>
+            <div className="empty-state-icon" aria-hidden="true">📋</div>
             <div className="empty-state-title">No transactions yet</div>
             <p>Add your first expense to get started.</p>
           </div>
