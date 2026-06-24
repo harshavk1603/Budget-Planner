@@ -1,9 +1,5 @@
-/**
- * App.jsx
- * Root component: defines routing and protects authenticated routes.
- */
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useApp } from "./context/AppContext";
+import { useApp } from "./context/useApp";
 
 import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
@@ -11,13 +7,53 @@ import DashboardPage from "./pages/DashboardPage";
 import ExpenseTrackerPage from "./pages/ExpenseTrackerPage";
 import ReportsPage from "./pages/ReportsPage";
 
-// Guard: redirect to login if not authenticated
 const ProtectedRoute = ({ children }) => {
-  const { user } = useApp();
+  const { user, loading } = useApp();
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'var(--bg-base)',
+        color: 'var(--text-primary)',
+        fontFamily: 'var(--font-display)'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>💰</div>
+          <div>Loading BudgetPro...</div>
+        </div>
+      </div>
+    );
+  }
+
   return user ? children : <Navigate to="/login" replace />;
 };
 
 export default function App() {
+  const { loading } = useApp();
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'var(--bg-base)',
+        color: 'var(--text-primary)',
+        fontFamily: 'var(--font-display)'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>💰</div>
+          <div>Loading BudgetPro...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
@@ -36,7 +72,6 @@ export default function App() {
         <Route path="reports" element={<ReportsPage />} />
       </Route>
 
-      {/* Fallback */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

@@ -1,45 +1,276 @@
-/* LoginPage.css */
+/* ═══════════════════════════════════════════════════════
+   LoginPage.css  –  Premium Fintech Login Experience
+   ═══════════════════════════════════════════════════════ */
 
+/* ── Keyframes ── */
+@keyframes loginFadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes loginOrbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(30px, -20px) scale(1.05); }
+  66%      { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes loginOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-25px, 25px) scale(1.08); }
+  66%      { transform: translate(15px, -10px) scale(0.92); }
+}
+
+@keyframes loginShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes loginShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50%, 90% { transform: translateX(-4px); }
+  30%, 70% { transform: translateX(4px); }
+}
+
+@keyframes loginPulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.35); }
+  70%  { box-shadow: 0 0 0 12px rgba(139, 92, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+
+@keyframes heroPatternDrift {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* ═══════════════════════════════════════════════
+   1. Page Layout — Split Design
+═══════════════════════════════════════════════ */
 .login-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
   background: var(--bg-base);
   position: relative;
   overflow: hidden;
-  padding: var(--space-4);
 }
 
-/* Decorative blobs */
-.login-bg-blob {
+/* ═══════════════════════════════════════════════
+   2. Left Hero / Branding Panel
+═══════════════════════════════════════════════ */
+.login-hero {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-12) var(--space-8);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1a1040 0%, #0f0f17 40%, #0d1a2e 100%);
+}
+
+/* Subtle dot-grid pattern overlay */
+.login-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(139, 92, 246, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+  animation: heroPatternDrift 60s linear infinite;
+  pointer-events: none;
+}
+
+/* Gradient mesh overlay */
+.login-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 15, 23, 0.6) 100%);
+  pointer-events: none;
+}
+
+/* Decorative gradient orbs */
+.login-hero-orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
-  animation: pulse 6s ease-in-out infinite;
+  will-change: transform;
 }
 
-.login-bg-blob-1 {
-  width: 600px;
-  height: 600px;
-  background: rgba(139, 92, 246, 0.18);
-  top: -200px;
-  left: -200px;
-}
-
-.login-bg-blob-2 {
+.login-hero-orb-1 {
   width: 400px;
   height: 400px;
-  background: rgba(59, 130, 246, 0.14);
-  bottom: -100px;
-  right: -100px;
-  animation-delay: 3s;
+  background: rgba(139, 92, 246, 0.25);
+  top: -80px;
+  left: -80px;
+  animation: loginOrbFloat 12s ease-in-out infinite;
 }
 
+.login-hero-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: rgba(59, 130, 246, 0.2);
+  bottom: -60px;
+  right: -60px;
+  animation: loginOrbFloat2 14s ease-in-out infinite;
+}
+
+.login-hero-orb-3 {
+  width: 200px;
+  height: 200px;
+  background: rgba(6, 182, 212, 0.15);
+  top: 50%;
+  left: 60%;
+  animation: loginOrbFloat 10s ease-in-out infinite reverse;
+}
+
+/* Hero content */
+.login-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 440px;
+  text-align: center;
+  animation: loginFadeIn 0.8s ease both;
+}
+
+.login-hero-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-bottom: var(--space-10);
+}
+
+.login-hero-logo-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-hero);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.45);
+  animation: loginPulseRing 3s ease-in-out infinite;
+}
+
+.login-hero-logo-text {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-hero-tagline {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #f1f0ff;
+  line-height: 1.3;
+  margin-bottom: var(--space-4);
+}
+
+.login-hero-subtitle {
+  font-size: 1rem;
+  color: rgba(147, 144, 176, 0.9);
+  line-height: 1.6;
+  margin-bottom: var(--space-10);
+}
+
+/* Hero feature showcase */
+.login-hero-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.login-hero-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all var(--transition);
+  cursor: default;
+}
+
+.login-hero-feature:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
+}
+
+.login-hero-feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.login-hero-feature-icon.purple { background: rgba(139, 92, 246, 0.15); }
+.login-hero-feature-icon.blue   { background: rgba(59, 130, 246, 0.15); }
+.login-hero-feature-icon.green  { background: rgba(34, 197, 94, 0.15); }
+.login-hero-feature-icon.rose   { background: rgba(244, 63, 94, 0.15); }
+
+.login-hero-feature-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(241, 240, 255, 0.85);
+}
+
+.login-hero-feature-desc {
+  font-size: 0.7rem;
+  color: rgba(147, 144, 176, 0.7);
+  margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════════
+   3. Right Panel — Form Area
+═══════════════════════════════════════════════ */
+.login-panel {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle orb on form side */
+.login-panel-orb {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.06);
+  filter: blur(100px);
+  top: -200px;
+  right: -200px;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════
+   4. Login Card — Glassmorphism
+═══════════════════════════════════════════════ */
 .login-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
@@ -47,38 +278,98 @@
   box-shadow: var(--shadow-lg);
   position: relative;
   z-index: 1;
-  animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px);
+  animation: loginFadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.login-logo {
-  display: flex;
+/* Glassmorphism inner glow */
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: var(--gradient-card);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Mobile-only logo (inside card) */
+.login-mobile-logo {
+  display: none; /* shown on mobile only */
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-8);
   justify-content: center;
+  margin-bottom: var(--space-6);
 }
 
-.login-logo-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
+.login-mobile-logo .login-logo-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
   background: var(--gradient-hero);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  font-size: 1.5rem;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
 }
 
-.login-logo-text {
+.login-mobile-logo .login-logo-text {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 800;
 }
 
+/* ═══════════════════════════════════════════════
+   5. Auth Mode Toggle — Pill Switcher
+═══════════════════════════════════════════════ */
+.login-mode-switcher {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: var(--space-8);
+  position: relative;
+  z-index: 1;
+}
+
+.login-mode-btn {
+  flex: 1;
+  padding: 10px var(--space-4);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.login-mode-btn:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+.login-mode-btn.active {
+  background: var(--gradient-hero);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+/* ═══════════════════════════════════════════════
+   6. Headline
+═══════════════════════════════════════════════ */
 .login-headline {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
+  position: relative;
+  z-index: 1;
+  animation: loginFadeInUp 0.5s ease both;
+  animation-delay: 0.1s;
 }
 
 .login-headline h1 {
@@ -92,31 +383,194 @@
 .login-headline p {
   font-size: 0.9375rem;
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
+/* ═══════════════════════════════════════════════
+   7. Form Styling
+═══════════════════════════════════════════════ */
 .login-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  position: relative;
+  z-index: 1;
 }
 
-.login-divider {
+/* Staggered animation for form groups */
+.login-form .login-form-stagger:nth-child(1) {
+  animation: loginFadeInUp 0.45s ease both;
+  animation-delay: 0.15s;
+}
+.login-form .login-form-stagger:nth-child(2) {
+  animation: loginFadeInUp 0.45s ease both;
+  animation-delay: 0.25s;
+}
+.login-form .login-form-stagger:nth-child(3) {
+  animation: loginFadeInUp 0.45s ease both;
+  animation-delay: 0.35s;
+}
+
+/* Auth mode switch (below form) */
+.login-switch {
+  text-align: center;
+  margin-top: var(--space-5);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+.login-switch-btn {
+  background: none;
+  border: none;
+  color: var(--accent-purple);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  transition: color var(--transition);
+}
+
+.login-switch-btn:hover {
+  color: var(--accent-purple-light, #a78bfa);
+}
+
+/* Trust badge */
+.login-trust {
+  text-align: center;
+  margin-top: var(--space-5);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+}
+
+/* Input wrapper for icon prefix */
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: var(--space-4);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color var(--transition);
+  z-index: 1;
+}
+
+.login-input-wrap:focus-within .login-input-icon {
+  color: var(--accent-purple);
+}
+
+.login-input-with-icon {
+  padding-left: 44px;
+  padding-right: 44px;
+}
+
+/* Password toggle button */
+.login-password-toggle {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+}
+
+.login-password-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════
+   8. Error Display
+═══════════════════════════════════════════════ */
+.login-error {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--text-muted);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--accent-rose);
   font-size: 0.8125rem;
-  margin: var(--space-2) 0;
+  font-weight: 500;
+  line-height: 1.4;
+  animation: loginShake 0.4s ease;
 }
 
-.login-divider::before,
-.login-divider::after {
+.login-error-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   9. Submit Button
+═══════════════════════════════════════════════ */
+.login-submit-btn {
+  width: 100%;
+  padding: 14px var(--space-8);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--gradient-hero);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  position: relative;
+  overflow: hidden;
+  animation: loginFadeInUp 0.45s ease both;
+  animation-delay: 0.4s;
+}
+
+.login-submit-btn::before {
   content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background-size: 200% 100%;
+  animation: loginShimmer 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
+.login-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(139, 92, 246, 0.5);
+}
+
+.login-submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+
+/* ═══════════════════════════════════════════════
+   10. Feature Grid (inside card, mobile)
+═══════════════════════════════════════════════ */
 .login-feature-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -124,6 +578,10 @@
   margin-top: var(--space-6);
   padding-top: var(--space-6);
   border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+  animation: loginFadeInUp 0.45s ease both;
+  animation-delay: 0.5s;
 }
 
 .login-feature {
@@ -132,18 +590,177 @@
   gap: var(--space-2);
   font-size: 0.8125rem;
   color: var(--text-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  cursor: default;
+}
+
+.login-feature:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  transform: translateX(2px);
 }
 
 .login-feature span:first-child {
   font-size: 1rem;
 }
 
-@media (max-width: 480px) {
+/* ═══════════════════════════════════════════════
+   11. Footer / Trust Badges
+═══════════════════════════════════════════════ */
+/* (Trust badge styles moved to form section above) */
+
+/* ═══════════════════════════════════════════════
+   12. Responsive — Tablet (481px – 768px)
+═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-hero {
+    flex: none;
+    padding: var(--space-8) var(--space-6) var(--space-6);
+    min-height: auto;
+  }
+
+  .login-hero-tagline {
+    font-size: 1.375rem;
+  }
+
+  .login-hero-subtitle {
+    font-size: 0.875rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .login-hero-features {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .login-hero-feature {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .login-hero-feature-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .login-hero-feature-title {
+    font-size: 0.75rem;
+  }
+
+  .login-panel {
+    flex: none;
+    padding: var(--space-6);
+  }
+
   .login-card {
+    max-width: 480px;
+    padding: var(--space-8) var(--space-6);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   13. Responsive — Mobile (<480px)
+═══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .login-hero {
+    display: none;
+  }
+
+  .login-mobile-logo {
+    display: flex;
+  }
+
+  .login-page {
+    flex-direction: column;
+    background: var(--bg-base);
+  }
+
+  .login-panel {
+    padding: var(--space-4);
+    min-height: 100vh;
+    align-items: flex-start;
+    padding-top: var(--space-10);
+  }
+
+  .login-card {
+    max-width: 100%;
     padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .login-mode-switcher {
+    margin-bottom: var(--space-6);
+  }
+
+  .login-mode-btn {
+    padding: 8px var(--space-3);
+    font-size: 0.8125rem;
+  }
+
+  .login-headline h1 {
+    font-size: 1.25rem;
+  }
+
+  .login-headline p {
+    font-size: 0.875rem;
   }
 
   .login-feature-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ═══════════════════════════════════════════════
+   14. Light Theme Adjustments
+═══════════════════════════════════════════════ */
+[data-theme="light"] .login-hero {
+  background: linear-gradient(160deg, #f0ecff 0%, #e8e4ff 40%, #dff0ff 100%);
+}
+
+[data-theme="light"] .login-hero::before {
+  background-image: radial-gradient(rgba(139, 92, 246, 0.08) 1px, transparent 1px);
+}
+
+[data-theme="light"] .login-hero::after {
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 247, 255, 0.4) 100%);
+}
+
+[data-theme="light"] .login-hero-tagline {
+  color: #1a1830;
+}
+
+[data-theme="light"] .login-hero-subtitle {
+  color: #6b6882;
+}
+
+[data-theme="light"] .login-hero-feature {
+  background: rgba(139, 92, 246, 0.06);
+  border-color: rgba(139, 92, 246, 0.1);
+}
+
+[data-theme="light"] .login-hero-feature-title {
+  color: #1a1830;
+}
+
+[data-theme="light"] .login-hero-orb-1 {
+  background: rgba(139, 92, 246, 0.12);
+}
+
+[data-theme="light"] .login-hero-orb-2 {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .login-hero-orb-3 {
+  background: rgba(6, 182, 212, 0.08);
+}
+
+[data-theme="light"] .login-card {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(139, 92, 246, 0.06);
 }

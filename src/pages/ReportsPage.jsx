@@ -1,20 +1,12 @@
-/**
- * ReportsPage.jsx
- * Analytics & charts: category pie chart, income vs expenses bar chart,
- * monthly spending trends, and category breakdown table.
- * Uses Recharts for all visualizations.
- */
-
 import { useMemo, useState } from "react";
 import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  LineChart, Line, Area, AreaChart,
+  Area, AreaChart,
 } from "recharts";
-import { useApp, CATEGORIES } from "../context/AppContext";
+import { useApp, CATEGORIES } from "../context/useApp";
 import "./Reports.css";
 
-/* ── Custom Recharts Tooltip ── */
 function CustomTooltip({ active, payload, label, currency }) {
   if (!active || !payload?.length) return null;
   return (
@@ -29,13 +21,9 @@ function CustomTooltip({ active, payload, label, currency }) {
   );
 }
 
-/* ─────────────────────────────────────────── */
-/*  Main Reports Page                          */
-/* ─────────────────────────────────────────── */
 export default function ReportsPage() {
-  const { transactions, incomeList, currency, totalIncome, totalExpenses, balance } = useApp();
+  const { transactions, currency, totalIncome, totalExpenses, balance } = useApp();
 
-  // Month filter
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -43,15 +31,23 @@ export default function ReportsPage() {
 
   const fmt = (n) => `${currency.symbol}${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  /* ── Transactions in selected month ── */
+  const expenses = useMemo(
+    () => transactions.filter((t) => t.type === "expense"),
+    [transactions]
+  );
+
+  const incomes = useMemo(
+    () => transactions.filter((t) => t.type === "income"),
+    [transactions]
+  );
+
   const monthlyTx = useMemo(
-    () => transactions.filter((t) => t.date.startsWith(selectedMonth)),
-    [transactions, selectedMonth]
+    () => expenses.filter((t) => t.date.startsWith(selectedMonth)),
+    [expenses, selectedMonth]
   );
 
   const monthlyTotal = monthlyTx.reduce((s, t) => s + Number(t.amount), 0);
 
-  /* ── Category breakdown (selected month) ── */
   const categoryData = useMemo(() => {
     const map = {};
     monthlyTx.forEach((t) => {
@@ -63,7 +59,6 @@ export default function ReportsPage() {
       .sort((a, b) => b.value - a.value);
   }, [monthlyTx]);
 
-  /* ── Last 6 months trend ── */
   const trendData = useMemo(() => {
     const months = [];
     const now = new Date();
@@ -71,21 +66,19 @@ export default function ReportsPage() {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       const label = d.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
-      const expenses = transactions
+      const monthExpenses = expenses
         .filter((t) => t.date.startsWith(key))
         .reduce((s, t) => s + Number(t.amount), 0);
-      const income = incomeList
+      const monthIncome = incomes
         .filter((t) => t.date.startsWith(key))
         .reduce((s, e) => s + Number(e.amount), 0);
-      months.push({ label, expenses, income, savings: Math.max(income - expenses, 0) });
+      months.push({ label, expenses: monthExpenses, income: monthIncome, savings: Math.max(monthIncome - monthExpenses, 0) });
     }
     return months;
-  }, [transactions, incomeList]);
+  }, [expenses, incomes]);
 
-  /* ── Income vs Expense bar data (all time, last 6 months) ── */
   const barData = trendData;
 
-  /* ── Monthly summary table (last 12 months) ── */
   const monthlySummary = useMemo(() => {
     const months = [];
     const now = new Date();
@@ -93,15 +86,12 @@ export default function ReportsPage() {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       const label = d.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-      const exp = transactions.filter((t) => t.date.startsWith(key)).reduce((s, t) => s + Number(t.amount), 0);
-      const inc = incomeList.filter((t) => t.date.startsWith(key)).reduce((s, e) => s + Number(e.amount), 0);
+      const exp = expenses.filter((t) => t.date.startsWith(key)).reduce((s, t) => s + Number(t.amount), 0);
+      const inc = incomes.filter((t) => t.date.startsWith(key)).reduce((s, e) => s + Number(e.amount), 0);
       if (exp > 0 || inc > 0) months.push({ label, income: inc, expenses: exp, savings: Math.max(inc - exp, 0) });
     }
     return months.reverse();
-  }, [transactions, incomeList]);
-
-  // Chart colors
-  const CHART_COLORS = CATEGORIES.map((c) => c.color);
+  }, [expenses, incomes]);
 
   const chartStyle = {
     fontSize: "12px",
@@ -112,7 +102,6 @@ export default function ReportsPage() {
 
   return (
     <div className="animate-fade-in">
-      {/* ── Month Selector ── */}
       <div className="reports-month-select">
         <label className="form-label" htmlFor="report-month">Viewing Month:</label>
         <input
@@ -128,9 +117,7 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ── Top Charts Grid ── */}
       <div className="reports-grid">
-        {/* Pie Chart – Category Breakdown */}
         <div className="reports-chart-card">
           <h2 className="reports-chart-title">🥧 Category Breakdown</h2>
           {categoryData.length === 0 ? (
@@ -152,7 +139,7 @@ export default function ReportsPage() {
                     outerRadius={100}
                     paddingAngle={3}
                   >
-                    {categoryData.map((entry, i) => (
+                    {categoryData.map((entry) => (
                       <Cell key={entry.id} fill={entry.color} stroke="transparent" />
                     ))}
                   </Pie>
@@ -163,7 +150,6 @@ export default function ReportsPage() {
                 </PieChart>
               </ResponsiveContainer>
 
-              {/* Category list below pie */}
               <div className="cat-breakdown-table">
                 {categoryData.map((cat) => {
                   const pct = monthlyTotal > 0 ? ((cat.value / monthlyTotal) * 100).toFixed(1) : 0;
@@ -190,7 +176,6 @@ export default function ReportsPage() {
           )}
         </div>
 
-        {/* Bar Chart – Income vs Expenses */}
         <div className="reports-chart-card">
           <h2 className="reports-chart-title">📊 Income vs Expenses</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -206,7 +191,6 @@ export default function ReportsPage() {
             </BarChart>
           </ResponsiveContainer>
 
-          {/* Quick stats */}
           <div className="flex gap-4" style={{ marginTop: "var(--space-4)", flexWrap: "wrap" }}>
             <div>
               <div className="form-label">Total Income</div>
@@ -224,7 +208,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ── Spending Trend (Area Chart, 6 months) ── */}
       <div className="trends-card">
         <h2 className="reports-chart-title">📈 Spending Trends (Last 6 Months)</h2>
         <ResponsiveContainer width="100%" height={260}>
@@ -256,7 +239,6 @@ export default function ReportsPage() {
         </ResponsiveContainer>
       </div>
 
-      {/* ── Monthly Summary Table ── */}
       <div className="monthly-table-card">
         <div className="monthly-table-header">
           <h2 className="reports-chart-title" style={{ margin: 0 }}>📅 Monthly Summary</h2>

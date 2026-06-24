@@ -1,11 +1,5 @@
-/**
- * ExpenseTrackerPage.jsx
- * Full CRUD for expenses: add, edit, delete, filter, search.
- * Also includes budget limits configuration per category.
- */
-
 import { useState, useMemo } from "react";
-import { useApp, CATEGORIES } from "../context/AppContext";
+import { useApp, CATEGORIES } from "../context/useApp";
 import "./ExpenseTracker.css";
 
 /* ── Expense Form Modal (Add / Edit) ── */
@@ -18,6 +12,7 @@ function ExpenseModal({ onClose, editData, currency }) {
     category: CATEGORIES[0].id,
     date: new Date().toISOString().slice(0, 10),
     note: "",
+    type: "expense",
   };
 
   const [form, setForm] = useState(editData ? { ...editData, amount: String(editData.amount) } : blankForm);
@@ -33,14 +28,14 @@ function ExpenseModal({ onClose, editData, currency }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const payload = { ...form, amount: Number(form.amount) };
+    const payload = { ...form, amount: Number(form.amount), type: "expense" };
     if (editData) {
-      updateTransaction(editData.id, payload);
+      await updateTransaction(editData.id, payload);
     } else {
-      addTransaction(payload);
+      await addTransaction(payload);
     }
     onClose();
   };
@@ -61,7 +56,6 @@ function ExpenseModal({ onClose, editData, currency }) {
         </div>
 
         <form className="expense-form" onSubmit={handleSubmit} noValidate>
-          {/* Description – full width */}
           <div className="form-group full">
             <label className="form-label" htmlFor="exp-desc">Description</label>
             <input id="exp-desc" className={`form-input ${errors.description ? "error" : ""}`}
@@ -70,7 +64,6 @@ function ExpenseModal({ onClose, editData, currency }) {
             {errors.description && <span className="form-error">{errors.description}</span>}
           </div>
 
-          {/* Amount */}
           <div className="form-group">
             <label className="form-label" htmlFor="exp-amount">Amount ({currency.symbol})</label>
             <input id="exp-amount" type="number" min="0" step="0.01"
@@ -80,7 +73,6 @@ function ExpenseModal({ onClose, editData, currency }) {
             {errors.amount && <span className="form-error">{errors.amount}</span>}
           </div>
 
-          {/* Category */}
           <div className="form-group">
             <label className="form-label" htmlFor="exp-cat">Category</label>
             <select id="exp-cat" className={`form-select ${errors.category ? "error" : ""}`}
@@ -92,7 +84,6 @@ function ExpenseModal({ onClose, editData, currency }) {
             {errors.category && <span className="form-error">{errors.category}</span>}
           </div>
 
-          {/* Date */}
           <div className="form-group">
             <label className="form-label" htmlFor="exp-date">Date</label>
             <input id="exp-date" type="date" className={`form-input ${errors.date ? "error" : ""}`}
@@ -100,7 +91,6 @@ function ExpenseModal({ onClose, editData, currency }) {
             {errors.date && <span className="form-error">{errors.date}</span>}
           </div>
 
-          {/* Note – full width */}
           <div className="form-group full">
             <label className="form-label" htmlFor="exp-note">Note (optional)</label>
             <input id="exp-note" className="form-input" placeholder="Any extra details..."
@@ -123,7 +113,10 @@ function ExpenseModal({ onClose, editData, currency }) {
 /*  Main Expense Tracker Page                  */
 /* ─────────────────────────────────────────── */
 export default function ExpenseTrackerPage() {
-  const { transactions, deleteTransaction, currency, budgetLimits, setBudgetLimits } = useApp();
+  const {
+    transactions, deleteTransaction, currency,
+    budgetLimits, setBudgetLimits,
+  } = useApp();
 
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -136,14 +129,20 @@ export default function ExpenseTrackerPage() {
 
   const fmt = (n) => `${currency.symbol}${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  /* ── Filtering & Sorting ── */
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
+  const expenses = useMemo(
+    () => transactions.filter((t) => t.type === "expense"),
+    [transactions]
+  );
+
   const filtered = useMemo(() => {
-    let list = [...transactions];
+    let list = [...expenses];
 
     if (search) {
       const q = search.toLowerCase();
       list = list.filter((t) =>
-        t.description.toLowerCase().includes(q) ||
+        t.description?.toLowerCase().includes(q) ||
         t.note?.toLowerCase().includes(q)
       );
     }
@@ -156,7 +155,6 @@ export default function ExpenseTrackerPage() {
       list = list.filter((t) => t.date.startsWith(filterMonth));
     }
 
-    // Sort
     list.sort((a, b) => {
       if (sortBy === "date-desc") return new Date(b.date) - new Date(a.date);
       if (sortBy === "date-asc") return new Date(a.date) - new Date(b.date);
@@ -166,45 +164,36 @@ export default function ExpenseTrackerPage() {
     });
 
     return list;
-  }, [transactions, search, filterCat, filterMonth, sortBy]);
+  }, [expenses, search, filterCat, filterMonth, sortBy]);
 
-  /* Summary chips */
   const totalFiltered = filtered.reduce((s, t) => s + Number(t.amount), 0);
 
-  /* Spend per category (all-time) */
   const spendByCat = useMemo(() => {
     const map = {};
-    transactions.forEach((t) => { map[t.category] = (map[t.category] || 0) + Number(t.amount); });
+    expenses.forEach((t) => {
+      map[t.category] = (map[t.category] || 0) + Number(t.amount);
+    });
     return map;
-  }, [transactions]);
+  }, [expenses]);
 
-  /* Handle edit */
   const handleEdit = (tx) => {
     setEditData(tx);
     setShowModal(true);
   };
 
-  /* Handle delete with confirmation */
-  const handleDelete = (id, desc) => {
-    if (window.confirm(`Delete "${desc}"?`)) deleteTransaction(id);
+  const handleDelete = async (id, desc) => {
+    if (window.confirm(`Delete "${desc}"?`)) await deleteTransaction(id);
   };
 
-  /* Save budget limits */
-  const saveLimits = () => {
-    const cleaned = {};
-    Object.entries(limitDraft).forEach(([k, v]) => {
-      if (v && Number(v) > 0) cleaned[k] = Number(v);
-    });
-    setBudgetLimits(cleaned);
+  const saveLimits = async () => {
+    await setBudgetLimits(limitDraft, currentMonth);
     setShowLimits(false);
   };
 
   return (
     <div className="animate-fade-in">
-      {/* ── Toolbar ── */}
       <div className="tracker-toolbar">
         <div className="tracker-filters">
-          {/* Search */}
           <div className="search-input-wrap">
             <span className="search-icon">🔍</span>
             <input
@@ -217,7 +206,6 @@ export default function ExpenseTrackerPage() {
             />
           </div>
 
-          {/* Category filter */}
           <select className="form-select" style={{ width: "auto" }}
             value={filterCat} onChange={(e) => setFilterCat(e.target.value)}
             aria-label="Filter by category" id="cat-filter">
@@ -227,12 +215,10 @@ export default function ExpenseTrackerPage() {
             ))}
           </select>
 
-          {/* Month filter */}
           <input type="month" className="form-input" style={{ width: "auto" }}
             value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
             aria-label="Filter by month" id="month-filter" />
 
-          {/* Sort */}
           <select className="form-select" style={{ width: "auto" }}
             value={sortBy} onChange={(e) => setSortBy(e.target.value)}
             aria-label="Sort expenses" id="sort-select">
@@ -244,7 +230,7 @@ export default function ExpenseTrackerPage() {
         </div>
 
         <div className="flex gap-3">
-          <button className="btn btn-secondary" onClick={() => setShowLimits(true)} id="budget-limits-btn">
+          <button className="btn btn-secondary" onClick={() => { setLimitDraft({ ...budgetLimits }); setShowLimits(true); }} id="budget-limits-btn">
             ⚙️ Budget Limits
           </button>
           <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true); }} id="add-expense-btn">
@@ -253,7 +239,6 @@ export default function ExpenseTrackerPage() {
         </div>
       </div>
 
-      {/* ── Summary Chips ── */}
       <div className="summary-chips">
         <div className="summary-chip">
           <span>📋</span> {filtered.length} expense{filtered.length !== 1 ? "s" : ""}
@@ -269,11 +254,10 @@ export default function ExpenseTrackerPage() {
         )}
       </div>
 
-      {/* ── Budget Limits Panel ── */}
       {showLimits && (
         <div className="budget-limits-card">
           <div className="budget-limits-header">
-            <h2 className="recent-title">⚙️ Set Budget Limits</h2>
+            <h2 className="recent-title">⚙️ Set Budget Limits ({currentMonth})</h2>
             <div className="flex gap-2">
               <button className="btn btn-secondary btn-sm" onClick={() => setShowLimits(false)}>Cancel</button>
               <button className="btn btn-primary btn-sm" onClick={saveLimits} id="save-limits-btn">Save Limits</button>
@@ -317,7 +301,6 @@ export default function ExpenseTrackerPage() {
         </div>
       )}
 
-      {/* ── Expense Table ── */}
       <div className="expense-section">
         <div className="expense-section-header">
           <h2 className="recent-title">💸 All Expenses</h2>
@@ -328,7 +311,7 @@ export default function ExpenseTrackerPage() {
           <div className="empty-state">
             <div className="empty-state-icon">📋</div>
             <div className="empty-state-title">No expenses found</div>
-            <p>{transactions.length === 0 ? "Add your first expense to get started." : "Try adjusting your filters."}</p>
+            <p>{expenses.length === 0 ? "Add your first expense to get started." : "Try adjusting your filters."}</p>
           </div>
         ) : (
           <div className="table-wrapper" style={{ border: "none", borderRadius: 0 }}>
@@ -383,7 +366,6 @@ export default function ExpenseTrackerPage() {
         )}
       </div>
 
-      {/* ── Modals ── */}
       {showModal && (
         <ExpenseModal
           onClose={() => setShowModal(false)}

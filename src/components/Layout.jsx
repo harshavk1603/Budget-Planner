@@ -1,22 +1,14 @@
-/**
- * Layout.jsx
- * Main application shell: sidebar navigation + topbar + page outlet.
- * Handles mobile hamburger menu and sidebar overlay.
- */
-
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useApp, CURRENCIES } from "../context/AppContext";
+import { useApp, CURRENCIES } from "../context/useApp";
 import "./Layout.css";
 
-/* Navigation items */
 const NAV_ITEMS = [
   { to: "/dashboard", icon: "🏠", label: "Dashboard" },
   { to: "/expenses",  icon: "💸", label: "Expenses" },
   { to: "/reports",   icon: "📊", label: "Reports" },
 ];
 
-/* Page title map */
 const PAGE_TITLES = {
   "/dashboard": { title: "Dashboard",      sub: "Your financial overview" },
   "/expenses":  { title: "Expense Tracker",sub: "Manage your spending" },
@@ -24,15 +16,16 @@ const PAGE_TITLES = {
 };
 
 export default function Layout() {
-  const { theme, setTheme, currency, setCurrency, user, logout } = useApp();
+  const { theme, setTheme, currency, setCurrency, user, profile, logOut } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const pageInfo = PAGE_TITLES[location.pathname] || { title: "Budget Planner", sub: "" };
+  const displayName = profile?.username || user?.email?.split("@")[0] || "User";
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logOut();
     navigate("/login");
   };
 
@@ -47,25 +40,21 @@ export default function Layout() {
 
   return (
     <div className="app-shell">
-      {/* ── Sidebar Overlay (mobile) ── */}
       <div
         className={`sidebar-overlay ${sidebarOpen ? "show" : ""}`}
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       />
 
-      {/* ── Sidebar ── */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} aria-label="Main navigation">
-        {/* Logo */}
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">💰</div>
+          <div className="sidebar-logo-icon" aria-hidden="true">💰</div>
           <div>
             <div className="sidebar-logo-text font-display">BudgetPro</div>
             <div className="sidebar-logo-sub">Smart Finance Tracker</div>
           </div>
         </div>
 
-        {/* Nav Links */}
         <nav className="sidebar-nav" role="navigation">
           <span className="nav-section-label">Menu</span>
           {NAV_ITEMS.map((item) => (
@@ -81,15 +70,14 @@ export default function Layout() {
           ))}
         </nav>
 
-        {/* Footer: user info + logout */}
         <div className="sidebar-footer">
           {user && (
             <div className="sidebar-user" aria-label="Logged in user">
               <div className="sidebar-avatar" aria-hidden="true">
-                {user.name?.charAt(0).toUpperCase()}
+                {displayName?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="sidebar-user-name">{user.name}</div>
+                <div className="sidebar-user-name">{displayName}</div>
                 <div className="sidebar-user-sub">Personal Account</div>
               </div>
             </div>
@@ -105,11 +93,8 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* ── Main Content ── */}
       <div className="main-content">
-        {/* Topbar */}
         <header className="topbar" role="banner">
-          {/* Mobile hamburger */}
           <button
             className="hamburger"
             onClick={() => setSidebarOpen((o) => !o)}
@@ -127,7 +112,6 @@ export default function Layout() {
           </div>
 
           <div className="topbar-right">
-            {/* Currency Selector */}
             <select
               className="currency-select"
               value={currency.code}
@@ -142,7 +126,6 @@ export default function Layout() {
               ))}
             </select>
 
-            {/* Theme Toggle */}
             <button
               className={`theme-toggle ${theme}`}
               onClick={handleThemeToggle}
@@ -156,7 +139,6 @@ export default function Layout() {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="page-content" role="main">
           <Outlet />
         </main>

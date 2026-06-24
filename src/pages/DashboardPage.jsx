@@ -1,18 +1,12 @@
-/**
- * DashboardPage.jsx
- * Main dashboard: stats, income management, savings goals, recent transactions,
- * budget alerts, and overspending warnings.
- */
-
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useApp, CATEGORIES } from "../context/AppContext";
+import { useApp, CATEGORIES } from "../context/useApp";
 import StatCard from "../components/StatCard";
 import "./Dashboard.css";
 
 /* ── Add Income Modal ── */
 function AddIncomeModal({ onClose, currency }) {
-  const { addIncome } = useApp();
+  const { addTransaction } = useApp();
   const [form, setForm] = useState({ source: "", amount: "", date: new Date().toISOString().slice(0, 10), note: "" });
   const [errors, setErrors] = useState({});
 
@@ -25,10 +19,17 @@ function AddIncomeModal({ onClose, currency }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    addIncome({ ...form, amount: Number(form.amount) });
+    await addTransaction({
+      type: "income",
+      category: "income",
+      description: form.source,
+      amount: Number(form.amount),
+      date: form.date,
+      note: form.note,
+    });
     onClose();
   };
 
@@ -90,10 +91,10 @@ function AddSavingsModal({ onClose, currency }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    addSavingsGoal({ ...form, target: Number(form.target) });
+    await addSavingsGoal({ ...form, target: Number(form.target), saved: 0 });
     onClose();
   };
 
@@ -150,10 +151,9 @@ function AddSavingsModal({ onClose, currency }) {
 /* ─────────────────────────────────────────── */
 export default function DashboardPage() {
   const {
-    user, currency,
+    profile, user, currency,
     totalIncome, totalExpenses, balance, totalSaved,
-    transactions, incomeList, deleteIncome,
-    savingsGoals, updateSavingsGoal, deleteSavingsGoal,
+    transactions, savingsGoals, depositToSavingsGoal, deleteSavingsGoal,
     budgetLimits,
   } = useApp();
 
@@ -163,20 +163,21 @@ export default function DashboardPage() {
 
   const fmt = (n) => `${currency.symbol}${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  /* Greeting */
+  const displayName = profile?.username || user?.email?.split("@")[0] || "User";
+
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const dateStr = new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 
-  /* Recent transactions (last 5) */
   const recentTx = transactions.slice(0, 5);
 
-  /* Overspending alerts: categories where spending > limit */
   const spendByCategory = useMemo(() => {
     const map = {};
-    transactions.forEach((tx) => {
-      map[tx.category] = (map[tx.category] || 0) + Number(tx.amount);
-    });
+    transactions
+      .filter((t) => t.type === "expense")
+      .forEach((tx) => {
+        map[tx.category] = (map[tx.category] || 0) + Number(tx.amount);
+      });
     return map;
   }, [transactions]);
 
@@ -192,28 +193,22 @@ export default function DashboardPage() {
     }));
   }, [budgetLimits, spendByCategory]);
 
-  /* Handle deposit into savings goal */
-  const handleDeposit = (goalId) => {
+  const handleDeposit = async (goalId) => {
     const amount = Number(depositAmounts[goalId] || 0);
     if (!amount || amount <= 0) return;
-    const goal = savingsGoals.find((g) => g.id === goalId);
-    if (!goal) return;
-    const newSaved = Math.min(Number(goal.saved) + amount, Number(goal.target));
-    updateSavingsGoal(goalId, { saved: newSaved });
+    await depositToSavingsGoal(goalId, amount);
     setDepositAmounts((prev) => ({ ...prev, [goalId]: "" }));
   };
 
   return (
     <div className="animate-fade-in">
-      {/* Greeting */}
       <div className="dashboard-overview">
         <h1 className="dashboard-greeting">
-          {greeting}, {user?.name}! 👋
+          {greeting}, {displayName}! 👋
         </h1>
         <p className="dashboard-date">{dateStr}</p>
       </div>
 
-      {/* ── Stat Cards ── */}
       <div className="stat-card-grid">
         <StatCard icon="💰" label="Total Income" value={fmt(totalIncome)} color="#22c55e" sub="All income sources" />
         <StatCard icon="💸" label="Total Expenses" value={fmt(totalExpenses)} color="#f43f5e" sub="All categories" />
@@ -221,7 +216,6 @@ export default function DashboardPage() {
         <StatCard icon="🎯" label="Total Saved" value={fmt(totalSaved)} color="#3b82f6" sub="Across all goals" />
       </div>
 
-      {/* ── Overspend Alerts ── */}
       {alerts.length > 0 && (
         <div className="alerts-section">
           <h2 className="recent-title" style={{ marginBottom: "var(--space-3)" }}>⚠️ Budget Alerts</h2>
@@ -237,7 +231,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Income Section ── */}
       <section className="income-section" aria-labelledby="income-section-title">
         <div className="income-header">
           <h2 className="recent-title" id="income-section-title">💵 Income Sources</h2>
@@ -246,7 +239,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {incomeList.length === 0 ? (
+        {transactions.filter((t) => t.type === "income").length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">💵</div>
             <div className="empty-state-title">No income added yet</div>
@@ -254,10 +247,10 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="income-list">
-            {incomeList.map((item) => (
+            {transactions.filter((t) => t.type === "income").map((item) => (
               <div key={item.id} className="income-item" role="listitem">
                 <div className="income-item-left">
-                  <span className="income-item-source">{item.source}</span>
+                  <span className="income-item-source">{item.description}</span>
                   <span className="income-item-date">
                     {new Date(item.date).toLocaleDateString("en-IN")}
                     {item.note && ` · ${item.note}`}
@@ -265,9 +258,6 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="income-item-amount">+{fmt(item.amount)}</span>
-                  <button className="btn btn-danger btn-sm" onClick={() => deleteIncome(item.id)} aria-label={`Delete ${item.source}`}>
-                    🗑
-                  </button>
                 </div>
               </div>
             ))}
@@ -275,7 +265,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* ── Savings Goals ── */}
       <section className="savings-section" aria-labelledby="savings-section-title">
         <div className="savings-header">
           <h2 className="recent-title" id="savings-section-title">🎯 Savings Goals</h2>
@@ -320,7 +309,6 @@ export default function DashboardPage() {
                     {pct >= 100 && <span style={{ color: "var(--accent-green)" }}>🎉 Goal reached!</span>}
                   </div>
 
-                  {/* Deposit */}
                   {pct < 100 && (
                     <div className="savings-deposit">
                       <input
@@ -343,7 +331,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* ── Recent Transactions ── */}
       <section className="recent-section" aria-labelledby="recent-tx-title">
         <div className="recent-header">
           <h2 className="recent-title" id="recent-tx-title">🕐 Recent Transactions</h2>
@@ -369,7 +356,9 @@ export default function DashboardPage() {
               </thead>
               <tbody>
                 {recentTx.map((tx) => {
-                  const cat = CATEGORIES.find((c) => c.id === tx.category);
+                  const cat = tx.type === "income"
+                    ? { icon: "💵", label: "Income", color: "#22c55e" }
+                    : CATEGORIES.find((c) => c.id === tx.category);
                   return (
                     <tr key={tx.id}>
                       <td style={{ color: "var(--text-primary)", fontWeight: 500 }}>{tx.description}</td>
@@ -379,8 +368,12 @@ export default function DashboardPage() {
                         </span>
                       </td>
                       <td>{new Date(tx.date).toLocaleDateString("en-IN")}</td>
-                      <td style={{ textAlign: "right", color: "var(--accent-rose)", fontWeight: 700 }}>
-                        -{fmt(tx.amount)}
+                      <td style={{
+                        textAlign: "right",
+                        color: tx.type === "income" ? "var(--accent-green)" : "var(--accent-rose)",
+                        fontWeight: 700
+                      }}>
+                        {tx.type === "income" ? "+" : "-"}{fmt(tx.amount)}
                       </td>
                     </tr>
                   );
@@ -391,7 +384,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* ── Modals ── */}
       {showIncomeModal && <AddIncomeModal onClose={() => setShowIncomeModal(false)} currency={currency} />}
       {showSavingsModal && <AddSavingsModal onClose={() => setShowSavingsModal(false)} currency={currency} />}
     </div>

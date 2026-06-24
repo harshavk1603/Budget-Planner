@@ -1,22 +1,65 @@
-/* Dashboard.css */
+/* Dashboard.css – Premium finance dashboard */
 
 /* ─ Overview section ─ */
 .dashboard-overview {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
+  position: relative;
 }
 
 .dashboard-greeting {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: var(--space-1);
+  margin-bottom: 2px;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
 .dashboard-date {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+
+/* ─ Dashboard Grid (2-column layout for income + savings) ─ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
   margin-bottom: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* ─ Section Card ─ */
+.dashboard-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.dashboard-section:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
+}
+
+.dashboard-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.dashboard-section-body {
+  padding: var(--space-5) var(--space-6);
 }
 
 /* ─ Income Section ─ */
@@ -24,15 +67,21 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  margin-bottom: var(--space-8);
+  overflow: hidden;
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.income-section:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
 }
 
 .income-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   gap: var(--space-3);
 }
@@ -40,24 +89,29 @@
 .income-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
 }
 
 .income-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  background: var(--bg-hover);
-  border-radius: var(--radius-md);
-  transition: background var(--transition);
+  padding: var(--space-4) var(--space-6);
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--border);
 }
 
-.income-item:hover { background: var(--bg-input); }
+.income-item:last-child {
+  border-bottom: none;
+}
+
+.income-item:hover {
+  background: var(--bg-hover);
+}
 
 .income-item-left {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .income-item-source {
@@ -74,8 +128,9 @@
 .income-item-amount {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   color: var(--accent-green);
+  letter-spacing: -0.01em;
 }
 
 /* ─ Recent Transactions ─ */
@@ -84,7 +139,13 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.recent-section:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
 }
 
 .recent-header {
@@ -97,26 +158,26 @@
   gap: var(--space-3);
 }
 
-.recent-title {
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
-  font-weight: 700;
-}
-
 /* ─ Savings Goals ─ */
 .savings-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  margin-bottom: var(--space-8);
+  overflow: hidden;
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.savings-section:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
 }
 
 .savings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   gap: var(--space-3);
 }
@@ -124,27 +185,53 @@
 .savings-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
 }
 
 .savings-item {
-  background: var(--bg-hover);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition-fast);
+}
+
+.savings-item:last-child {
+  border-bottom: none;
+}
+
+.savings-item:hover {
+  background: rgba(139, 92, 246, 0.02);
 }
 
 .savings-item-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: var(--space-3);
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 
+.savings-item-name-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.savings-item-emoji {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .savings-item-name {
   font-weight: 600;
   color: var(--text-primary);
+  font-size: 0.9375rem;
 }
 
 .savings-item-amounts {
@@ -154,6 +241,7 @@
 
 .savings-item-amounts strong {
   color: var(--accent-purple);
+  font-family: var(--font-display);
 }
 
 .savings-item-pct {
@@ -162,11 +250,30 @@
   margin-top: var(--space-2);
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.savings-goal-reached {
+  color: var(--accent-green);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ─ Budget Alerts ─ */
 .alerts-section {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.alerts-section-title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .alerts-section .alert + .alert {
@@ -203,13 +310,28 @@
   flex: 1;
 }
 
-/* Category badge in tx row */
-.cat-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.8125rem;
-  font-weight: 500;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-greeting {
+    font-size: 1.375rem;
+  }
+
+  .income-item,
+  .savings-item {
+    padding: var(--space-4);
+  }
+
+  .income-header,
+  .savings-header,
+  .recent-header {
+    padding: var(--space-4);
+  }
+
+  .dashboard-section-header {
+    padding: var(--space-4);
+  }
+
+  .dashboard-section-body {
+    padding: var(--space-4);
+  }
 }
