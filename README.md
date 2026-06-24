@@ -85,12 +85,13 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── .gitignore
 ├── package.json
 ├── README.md
-├── PROJECT_DEMO_NOTES.md         # Detailed demo walkthrough & talking points
-├── RESUME_PROJECT_POINTS.md      # Resume bullets & LinkedIn description
-├── PROJECT_REPORT_OUTLINE.md     # College report structure & outline
-├── docs/                         # Documentation assets
-│   ├── README.md                 # Screenshot naming & setup guide
-│   └── screenshots/              # App screenshots (add your own)
+├── DEMO_CHECKLIST.md              # Quick demo setup & 2/5-min flow scripts
+├── PROJECT_DEMO_NOTES.md          # Detailed demo walkthrough & talking points
+├── RESUME_PROJECT_POINTS.md       # Resume bullets & LinkedIn description
+├── PROJECT_REPORT_OUTLINE.md      # College report structure & outline
+├── docs/                          # Documentation assets
+│   ├── README.md                  # Screenshot naming & setup guide
+│   └── screenshots/               # App screenshots (add your own)
 ├── public/
 │   ├── favicon.svg
 │   └── icons.svg
