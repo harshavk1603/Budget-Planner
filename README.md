@@ -2,6 +2,12 @@
 
 A modern, feature-rich personal finance tracker built with **React 19**, **Vite 8**, and **Supabase**. BudgetPro helps you track income, manage expenses, set savings goals, and visualize your financial health — all with a beautiful dark/light responsive UI.
 
+### Live Demo
+
+> **[https://budgetpro-harshavk1603.vercel.app](https://budgetpro-harshavk1603.vercel.app)**
+>
+> Sign up with any email/password to try the app. No email verification required.
+
 ---
 
 ## Features
@@ -83,6 +89,7 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── seed_demo_data.sql            # Optional: sample data for demos
 ├── .env.example                  # Environment variable template
 ├── .gitignore
+├── vercel.json                  # Vercel SPA routing config
 ├── package.json
 ├── README.md
 ├── PROJECT_ABSTRACT.md            # Abstract, problem statement, objectives, outcomes
@@ -214,6 +221,41 @@ npm run lint
 | `npm run build`      | Build for production          |
 | `npm run preview`    | Preview production build      |
 | `npm run lint`       | Run ESLint                    |
+
+---
+
+## Deployment (Vercel)
+
+The app is deployed on **Vercel** as a Vite SPA. The `vercel.json` file handles SPA routing so all routes work on direct page refresh.
+
+### Deploy your own fork
+
+1. Fork or clone this repo
+2. Go to [vercel.com](https://vercel.com) and import the GitHub repository
+3. Vercel auto-detects Vite — no framework preset needed
+4. In **Settings > Environment Variables**, add:
+   - `VITE_SUPABASE_URL` — your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` — your Supabase anon key
+5. Deploy — Vercel builds with `npm run build` and serves from `dist/`
+
+### Environment variables
+
+| Variable | Where to find it |
+|----------|-------------------|
+| `VITE_SUPABASE_URL` | Supabase dashboard > Project Settings > API > Project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase dashboard > Project Settings > API > anon public key |
+
+### SPA routing
+
+`vercel.json` rewrites all routes to `index.html` so React Router handles client-side navigation:
+
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
 
 ---
 
