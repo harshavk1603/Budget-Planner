@@ -25,13 +25,13 @@ const saveToStorage = (key, value) => {
 };
 
 export default function AppProvider({ children }) {
+  // Initialize loading to false if Supabase is not configured
+  const initialLoading = isSupabaseConfigured;
+
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [supabaseError, setSupabaseError] = useState(
-    !isSupabaseConfigured ? "Missing Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)." : null
-  );
+  const [loading, setLoading] = useState(initialLoading);
 
   const [theme, setTheme] = useState(() => loadFromStorage("bp_theme", "dark"));
   const [currency, setCurrency] = useState(() =>
@@ -54,7 +54,6 @@ export default function AppProvider({ children }) {
     let cancelled = false;
 
     if (!isSupabaseConfigured) {
-      setLoading(false);
       return;
     }
 
@@ -288,7 +287,6 @@ export default function AppProvider({ children }) {
     user,
     profile,
     loading,
-    supabaseError,
     theme, setTheme,
     currency, setCurrency,
     signUp, logIn, logOut,

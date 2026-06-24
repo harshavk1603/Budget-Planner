@@ -94,13 +94,13 @@ export default function LoginPage() {
           </p>
           <div className="login-hero-features">
             {[
-              ["📊", "Analytics", "Visual spending insights"],
-              ["💸", "Tracking", "Every transaction logged"],
-              ["🎯", "Goals", "Save toward what matters"],
-              ["🔔", "Alerts", "Stay within your budget"],
-            ].map(([icon, title, desc]) => (
+              ["📊", "Analytics", "Visual spending insights", "purple"],
+              ["💸", "Tracking", "Every transaction logged", "blue"],
+              ["🎯", "Goals", "Save toward what matters", "green"],
+              ["🔔", "Alerts", "Stay within your budget", "rose"],
+            ].map(([icon, title, desc, color]) => (
               <div className="login-hero-feature" key={title}>
-                <span className="login-hero-feature-icon">{icon}</span>
+                <span className={`login-hero-feature-icon ${color}`}>{icon}</span>
                 <div>
                   <div className="login-hero-feature-title">{title}</div>
                   <div className="login-hero-feature-desc">{desc}</div>

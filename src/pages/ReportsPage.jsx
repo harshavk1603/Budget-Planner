@@ -116,6 +116,24 @@ export default function ReportsPage() {
         </div>
       </div>
 
+      <div className="reports-stats-grid">
+        <div className="reports-stat-card">
+          <div className="reports-stat-icon">💰</div>
+          <div className="reports-stat-label">Total Income</div>
+          <div className="reports-stat-value" style={{ color: "var(--accent-green)" }}>{fmt(totalIncome)}</div>
+        </div>
+        <div className="reports-stat-card">
+          <div className="reports-stat-icon">💸</div>
+          <div className="reports-stat-label">Total Expenses</div>
+          <div className="reports-stat-value" style={{ color: "var(--accent-rose)" }}>{fmt(totalExpenses)}</div>
+        </div>
+        <div className="reports-stat-card">
+          <div className="reports-stat-icon">🏦</div>
+          <div className="reports-stat-label">Net Balance</div>
+          <div className="reports-stat-value" style={{ color: balance >= 0 ? "var(--accent-purple)" : "var(--accent-rose)" }}>{fmt(balance)}</div>
+        </div>
+      </div>
+
       <div className="reports-grid">
         <div className="reports-chart-card">
           <h2 className="reports-chart-title">🥧 Category Breakdown</h2>

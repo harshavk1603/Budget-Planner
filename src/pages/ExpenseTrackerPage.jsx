@@ -75,7 +75,7 @@ function ExpenseModal({ onClose, editData, currency }) {
 
           <div className="form-group">
             <label className="form-label" htmlFor="exp-cat">Category</label>
-            <select id="exp-cat" className={`form-select ${errors.category ? "error" : ""}`}
+            <select id="exp-cat" className={`filter-pill ${errors.category ? "error" : ""}`}
               value={form.category} onChange={set("category")}>
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
@@ -206,7 +206,7 @@ export default function ExpenseTrackerPage() {
             />
           </div>
 
-          <select className="form-select" style={{ width: "auto" }}
+          <select className="filter-pill" style={{ width: "auto" }}
             value={filterCat} onChange={(e) => setFilterCat(e.target.value)}
             aria-label="Filter by category" id="cat-filter">
             <option value="all">All Categories</option>
@@ -219,7 +219,7 @@ export default function ExpenseTrackerPage() {
             value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
             aria-label="Filter by month" id="month-filter" />
 
-          <select className="form-select" style={{ width: "auto" }}
+          <select className="filter-pill" style={{ width: "auto" }}
             value={sortBy} onChange={(e) => setSortBy(e.target.value)}
             aria-label="Sort expenses" id="sort-select">
             <option value="date-desc">Newest First</option>
