@@ -91,6 +91,7 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── DEMO_CHECKLIST.md              # Quick demo setup & 2/5-min flow scripts
 ├── PROJECT_DEMO_NOTES.md          # Detailed demo walkthrough & talking points
 ├── RESUME_PROJECT_POINTS.md       # Resume bullets & LinkedIn description
+├── PORTFOLIO_PROJECT_ENTRY.md     # Portfolio showcase entry with tech highlights
 ├── PROJECT_REPORT_OUTLINE.md      # College report structure & outline
 ├── docs/                          # Documentation assets
 │   ├── README.md                  # Screenshot naming & setup guide
