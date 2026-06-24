@@ -61,7 +61,7 @@
 | **Currencies** | 4: INR, USD, EUR, GBP |
 | **Auth** | Email/password with username |
 | **Security** | Row-Level Security on all tables |
-| **Languages** | JavaScript (React), SQL, CSS |
+| **Languages** | JavaScript (React 19), SQL (PostgreSQL), CSS |
 | **Dependencies** | react, react-dom, react-router-dom, recharts, @supabase/supabase-js |
 
 ---
@@ -73,3 +73,18 @@
 **Suggested Title:** BudgetPro — Full-Stack Personal Finance Tracker
 
 **Technologies:** React 19, Vite 8, Supabase (Auth + Postgres + RLS), Recharts, CSS Custom Properties
+
+---
+
+## ATS Keywords & Technical Skills
+
+| Category | Keywords |
+|----------|----------|
+| **Frontend** | React 19, JavaScript (ES6+), Hooks, Context API, JSX, SPA, Responsive Design, CSS3, CSS Custom Properties, Flexbox, CSS Grid, Vite 8 |
+| **Backend / Database** | Supabase, PostgreSQL, Row-Level Security (RLS), SQL, Database Schema Design, Auth (email/password), Serverless Backend, BaaS |
+| **Libraries & Tools** | Recharts 3, React Router v7, ESLint 10, npm, Git, REST (via Supabase SDK) |
+| **Concepts** | Full-Stack Development, CRUD, Authentication, Authorization, Data Isolation, UI/UX, State Management, Design Systems, Mobile-First, Dark Mode, Multi-Currency, Data Visualization |
+| **Soft Skills** | Project Architecture, UI/UX Design, Database Design, Technical Documentation |
+
+### Projects Using These Skills
+React, JavaScript, Supabase, PostgreSQL, CSS, Git, npm, REST APIs, Authentication, Authorization, Data Visualization, Responsive Design, State Management, Full-Stack Development
