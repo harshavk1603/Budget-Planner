@@ -102,17 +102,16 @@ export default function ReportsPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="reports-month-select">
+      <div className="reports-month-bar">
         <label className="form-label" htmlFor="report-month">Viewing Month:</label>
         <input
           id="report-month"
           type="month"
           className="form-input"
-          style={{ width: "auto" }}
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
         />
-        <div className="summary-chip" style={{ background: "rgba(139,92,246,0.1)", color: "var(--accent-purple)" }}>
+        <div className="reports-month-chip">
           Monthly Expenses: <strong style={{ marginLeft: 6 }}>{fmt(monthlyTotal)}</strong>
         </div>
       </div>

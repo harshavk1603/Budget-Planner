@@ -1,60 +1,72 @@
-/**
- * LoginPage.jsx
- * Premium split-layout auth screen with password visibility toggle.
- * Stores user data in AppContext (which persists to localStorage).
- */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/useApp";
 import "./LoginPage.css";
 
 export default function LoginPage() {
-  const { login, register, user } = useApp();
+  const { signUp, logIn, user } = useApp();
   const navigate = useNavigate();
 
   const [isSignUp, setIsSignUp] = useState(false);
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  // If already logged in, redirect to dashboard
   if (user) {
     navigate("/dashboard", { replace: true });
     return null;
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setError("Please enter your name to continue.");
+    setError("");
+
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedUsername) {
+      setError("Please enter a username to continue.");
       return;
     }
-    if (trimmed.length < 2) {
-      setError("Name must be at least 2 characters.");
+    if (trimmedUsername.length < 2) {
+      setError("Username must be at least 2 characters.");
       return;
     }
-    if (!password || password.length < 4) {
-      setError("Password must be at least 4 characters.");
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
-    if (isSignUp) {
-      const res = register(trimmed, password);
-      if (!res.success) {
-        setError(res.error);
-        return;
+    setSubmitting(true);
+
+    try {
+      if (isSignUp) {
+        const res = await signUp(trimmedEmail, password, trimmedUsername);
+        if (!res.success) {
+          setError(res.error || "Sign up failed. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+      } else {
+        const res = await logIn(trimmedEmail, password);
+        if (!res.success) {
+          setError(res.error || "Invalid email or password.");
+          setSubmitting(false);
+          return;
+        }
       }
-    } else {
-      const res = login(trimmed, password);
-      if (!res.success) {
-        setError(res.error);
-        return;
-      }
+      navigate("/dashboard", { replace: true });
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setSubmitting(false);
     }
-    navigate("/dashboard", { replace: true });
   };
 
   const switchMode = () => {
@@ -64,7 +76,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* ── Hero Panel (left side on desktop) ── */}
+      {/* Hero Panel */}
       <div className="login-hero" aria-hidden="true">
         <div className="login-hero-orb login-hero-orb-1" />
         <div className="login-hero-orb login-hero-orb-2" />
@@ -99,12 +111,12 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ── Form Panel (right side on desktop) ── */}
+      {/* Form Panel */}
       <div className="login-panel">
         <div className="login-panel-orb" aria-hidden="true" />
 
         <div className="login-card">
-          {/* Mobile-only logo (hero hidden on mobile) */}
+          {/* Mobile-only logo */}
           <div className="login-mobile-logo">
             <div className="login-logo-icon" aria-hidden="true">💰</div>
             <span className="login-logo-text text-gradient font-display">BudgetPro</span>
@@ -137,16 +149,16 @@ export default function LoginPage() {
           {/* Form */}
           <form className="login-form" onSubmit={handleSubmit} noValidate>
             <div className="form-group login-form-stagger">
-              <label className="form-label" htmlFor="user-name">Username</label>
+              <label className="form-label" htmlFor="login-username">Username</label>
               <div className="login-input-wrap">
                 <span className="login-input-icon" aria-hidden="true">👤</span>
                 <input
-                  id="user-name"
+                  id="login-username"
                   type="text"
-                  className={`form-input login-input-with-icon ${error && !name ? "error" : ""}`}
+                  className={`form-input login-input-with-icon ${error && !username ? "error" : ""}`}
                   placeholder="e.g. harsh_sharma"
-                  value={name}
-                  onChange={(e) => { setName(e.target.value); setError(""); }}
+                  value={username}
+                  onChange={(e) => { setUsername(e.target.value); setError(""); }}
                   autoFocus
                   autoComplete="username"
                   maxLength={50}
@@ -155,11 +167,28 @@ export default function LoginPage() {
             </div>
 
             <div className="form-group login-form-stagger">
-              <label className="form-label" htmlFor="user-password">Password</label>
+              <label className="form-label" htmlFor="login-email">Email</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon" aria-hidden="true">✉️</span>
+                <input
+                  id="login-email"
+                  type="email"
+                  className={`form-input login-input-with-icon ${error && !email ? "error" : ""}`}
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                  autoComplete="email"
+                  maxLength={100}
+                />
+              </div>
+            </div>
+
+            <div className="form-group login-form-stagger">
+              <label className="form-label" htmlFor="login-password">Password</label>
               <div className="login-input-wrap">
                 <span className="login-input-icon" aria-hidden="true">🔒</span>
                 <input
-                  id="user-password"
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   className={`form-input login-input-with-icon ${error && !password ? "error" : ""}`}
                   placeholder="••••••••"
@@ -180,7 +209,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className={`login-error ${error ? "login-error-show" : ""}`} role="alert">
+              <div className="login-error login-error-show" role="alert">
                 <span className="login-error-icon">⚠️</span>
                 <span>{error}</span>
               </div>
@@ -190,8 +219,9 @@ export default function LoginPage() {
               type="submit"
               className="btn btn-primary btn-lg login-submit-btn"
               id="login-submit-btn"
+              disabled={submitting}
             >
-              <span>{isSignUp ? "✨" : "🚀"}</span> {isSignUp ? "Create Account" : "Log In"}
+              <span>{isSignUp ? "✨" : "🚀"}</span> {submitting ? "Please wait..." : (isSignUp ? "Create Account" : "Log In")}
             </button>
           </form>
 
@@ -220,7 +250,7 @@ export default function LoginPage() {
 
           {/* Trust badge */}
           <div className="login-trust">
-            🔒 Your data stays private & secure
+            🔒 Your data stays private &amp; secure
           </div>
         </div>
       </div>

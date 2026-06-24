@@ -231,6 +231,7 @@ export default function DashboardPage() {
         </div>
       )}
 
+      <div className="dashboard-grid">
       <section className="income-section" aria-labelledby="income-section-title">
         <div className="income-header">
           <h2 className="recent-title" id="income-section-title">💵 Income Sources</h2>
@@ -330,6 +331,7 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+      </div>
 
       <section className="recent-section" aria-labelledby="recent-tx-title">
         <div className="recent-header">

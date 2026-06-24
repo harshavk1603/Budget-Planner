@@ -229,7 +229,7 @@ export default function ExpenseTrackerPage() {
           </select>
         </div>
 
-        <div className="flex gap-3">
+        <div className="tracker-actions">
           <button className="btn btn-secondary" onClick={() => { setLimitDraft({ ...budgetLimits }); setShowLimits(true); }} id="budget-limits-btn">
             ⚙️ Budget Limits
           </button>
