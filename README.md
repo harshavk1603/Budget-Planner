@@ -80,6 +80,7 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── index.html                    # HTML entry point
 ├── vite.config.js                # Vite configuration
 ├── supabase_schema.sql           # Database schema & RLS policies
+├── seed_demo_data.sql            # Optional: sample data for demos
 ├── .env.example                  # Environment variable template
 ├── .gitignore
 ├── package.json
@@ -145,10 +146,11 @@ Go to [supabase.com](https://supabase.com) and create a new project. Once it's r
 ### 3. Configure authentication
 
 1. Go to **Authentication > Providers**
-2. Ensure **Email** provider is enabled
+2. Ensure the **Email** provider is turned **On** (click to expand, toggle enabled)
 3. Go to **Authentication > Settings**
-4. Under **Email Auth**, disable **Confirm email** if you want instant sign-up (no email verification)
+4. Under **Email Auth**, disable **Confirm email** if you want instant sign-up without email verification (recommended for demos)
 5. Under **Site URL**, set your app URL (e.g., `http://localhost:5173`)
+6. Click **Save**
 
 ### 4. Get your API credentials
 
@@ -205,6 +207,21 @@ npm run lint
 | `npm run build`      | Build for production          |
 | `npm run preview`    | Preview production build      |
 | `npm run lint`       | Run ESLint                    |
+
+---
+
+## Optional: Load Demo Data
+
+To see the app populated with sample data for your demo:
+
+1. **Sign up** for an account in the app
+2. In your Supabase dashboard, go to **Authentication > Users** and copy your **User UUID**
+3. Open `seed_demo_data.sql` and replace `YOUR_USER_UUID` with your actual UUID
+4. Run the modified SQL in the **SQL Editor**
+
+This adds sample income, expenses, savings goals, and budget limits to your account only. It is completely optional and does not affect other users.
+
+> To remove demo data later, you can delete the rows from `transactions`, `savings_goals`, and `budgets` tables filtered by your `user_id`.
 
 ---
 
