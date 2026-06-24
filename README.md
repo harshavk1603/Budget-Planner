@@ -85,6 +85,9 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── .gitignore
 ├── package.json
 ├── README.md
+├── PROJECT_ABSTRACT.md            # Abstract, problem statement, objectives, outcomes
+├── VIVA_QUESTIONS.md              # 45 viva/interview Q&A based on actual architecture
+├── PPT_CONTENT.md                 # Slide-by-slide presentation content
 ├── DEMO_CHECKLIST.md              # Quick demo setup & 2/5-min flow scripts
 ├── PROJECT_DEMO_NOTES.md          # Detailed demo walkthrough & talking points
 ├── RESUME_PROJECT_POINTS.md       # Resume bullets & LinkedIn description
