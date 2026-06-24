@@ -85,9 +85,11 @@ A modern, feature-rich personal finance tracker built with **React 19**, **Vite 
 ├── .gitignore
 ├── package.json
 ├── README.md
-├── PROJECT_DEMO_NOTES.md         # Demo walkthrough guide
-├── RESUME_PROJECT_POINTS.md      # Resume & interview points
-├── docs/                         # Screenshots & assets
+├── DEMO_CHECKLIST.md             # Pre-demo setup, test data, 2-min & 5-min flows
+├── PROJECT_DEMO_NOTES.md         # Detailed demo walkthrough & talking points
+├── RESUME_PROJECT_POINTS.md      # Resume bullets & LinkedIn description
+├── docs/                         # Documentation assets
+│   ├── README.md                 # Screenshot naming & setup guide
 │   └── screenshots/              # App screenshots (add your own)
 ├── public/
 │   ├── favicon.svg
@@ -225,17 +227,37 @@ This adds sample income, expenses, savings goals, and budget limits to your acco
 
 ---
 
-## Screenshots
+## Screenshots / UI Preview
 
-> Screenshots coming soon. Add your own screenshots to `docs/screenshots/` and reference them here.
+> Screenshots are placeholders — add your own to `docs/screenshots/` and they will appear below.
 
-<!-- Replace with actual screenshots once available -->
-| Page              | Preview |
-|-------------------|---------|
-| Login Page        | `docs/screenshots/login.png` |
-| Dashboard         | `docs/screenshots/dashboard.png` |
-| Expense Tracker   | `docs/screenshots/expenses.png` |
-| Reports           | `docs/screenshots/reports.png` |
+<!-- ============================================================
+     SCREENSHOTS
+     To add screenshots:
+       1. Run `npm run dev`
+       2. Take a screenshot of each page (1280×800 recommended)
+       3. Save to docs/screenshots/ with the filenames below
+       4. Uncomment the lines in this section
+     ============================================================ -->
+
+<!-- ### Login / Signup -->
+<!-- ![Login Page](docs/screenshots/login.png) -->
+
+<!-- ### Dashboard -->
+<!-- ![Dashboard Overview](docs/screenshots/dashboard.png) -->
+
+<!-- ### Expense Tracker -->
+<!-- ![Expense Tracker with search, filters, and budget limits](docs/screenshots/expenses.png) -->
+
+<!-- ### Reports & Analytics -->
+<!-- ![Reports — pie chart, bar chart, area chart, monthly summary](docs/screenshots/reports.png) -->
+
+| Page | Screenshot | Description |
+|------|-----------|-------------|
+| Login / Signup | `docs/screenshots/login.png` | Auth page with hero panel, email/password form, and feature highlights |
+| Dashboard | `docs/screenshots/dashboard.png` | Stat cards (income, expenses, balance, savings), savings goals, budget alerts, quick-add income |
+| Expense Tracker | `docs/screenshots/expenses.png` | Full CRUD table with search, category filter, month picker, sort options, and budget limits panel |
+| Reports & Analytics | `docs/screenshots/reports.png` | Pie chart (category breakdown), bar chart (income vs expenses), area chart (spending trends), monthly summary table |
 
 ---
 
@@ -257,8 +279,8 @@ This adds sample income, expenses, savings goals, and budget limits to your acco
 
 **Harsh Sharma** — Full-stack developer
 
-- GitHub: [@antigraviity](https://github.com/antigraviity)
-- Project: [BudgetPro](https://github.com/antigraviity/BudgetPro)
+- GitHub: [@harshavk1603](https://github.com/harshavk1603)
+- Project: [BudgetPro](https://github.com/harshavk1603/Budget-Planner)
 
 ---
 
