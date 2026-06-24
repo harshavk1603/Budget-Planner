@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AppContext } from "./AppContext";
 import { CURRENCIES } from "./constants";
+import { isSupabaseConfigured } from "../lib/supabase";
 import { authService } from "../services/authService";
 import { transactionService } from "../services/transactionService";
 import { savingsService } from "../services/savingsService";
@@ -28,6 +29,9 @@ export default function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [supabaseError, setSupabaseError] = useState(
+    !isSupabaseConfigured ? "Missing Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)." : null
+  );
 
   const [theme, setTheme] = useState(() => loadFromStorage("bp_theme", "dark"));
   const [currency, setCurrency] = useState(() =>
@@ -48,6 +52,11 @@ export default function AppProvider({ children }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
 
     const getInitialSession = async () => {
       try {
@@ -70,30 +79,36 @@ export default function AppProvider({ children }) {
 
     getInitialSession();
 
-    const { data: { subscription } } = authService.onAuthStateChange(
-      async (event, newSession) => {
-        if (cancelled) return;
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+    let subscription;
+    try {
+      const { data } = authService.onAuthStateChange(
+        async (event, newSession) => {
+          if (cancelled) return;
+          setSession(newSession);
+          setUser(newSession?.user ?? null);
 
-        if (newSession?.user) {
-          const p = await authService.getProfile(newSession.user.id);
-          if (!cancelled) setProfile(p);
-        } else {
-          if (!cancelled) {
-            setProfile(null);
-            setTransactions([]);
-            setSavingsGoals([]);
-            setBudgets([]);
-            setBudgetLimitsState({});
+          if (newSession?.user) {
+            const p = await authService.getProfile(newSession.user.id);
+            if (!cancelled) setProfile(p);
+          } else {
+            if (!cancelled) {
+              setProfile(null);
+              setTransactions([]);
+              setSavingsGoals([]);
+              setBudgets([]);
+              setBudgetLimitsState({});
+            }
           }
         }
-      }
-    );
+      );
+      subscription = data.subscription;
+    } catch {
+      // auth state change listener unavailable
+    }
 
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
@@ -105,18 +120,21 @@ export default function AppProvider({ children }) {
     const loadAll = async () => {
       if (!userId) return;
       try {
-        const [txData, sgData, bData] = await Promise.all([
+        const results = await Promise.allSettled([
           transactionService.fetchAll(userId),
           savingsService.fetchAll(userId),
           budgetService.fetchAll(userId),
         ]);
         if (cancelled) return;
-        setTransactions(txData);
-        setSavingsGoals(sgData);
-        setBudgets(bData);
-        const limits = {};
-        bData.forEach((b) => { limits[b.category] = b.limit_amount; });
-        setBudgetLimitsState(limits);
+        if (results[0].status === "fulfilled") setTransactions(results[0].value);
+        if (results[1].status === "fulfilled") setSavingsGoals(results[1].value);
+        if (results[2].status === "fulfilled") {
+          const bData = results[2].value;
+          setBudgets(bData);
+          const limits = {};
+          bData.forEach((b) => { limits[b.category] = b.limit_amount; });
+          setBudgetLimitsState(limits);
+        }
       } catch {
         // handle error silently
       }
@@ -270,6 +288,7 @@ export default function AppProvider({ children }) {
     user,
     profile,
     loading,
+    supabaseError,
     theme, setTheme,
     currency, setCurrency,
     signUp, logIn, logOut,
